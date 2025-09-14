@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgebraTutor - Interactive Algebra Course</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --danger-color: #ef4444;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Layout Components */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-tracker {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .progress-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .progress-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Course Modes */
+        .mode-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 16px 24px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .mode-btn.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .mode-btn.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 20px;
+        }
+
+        .mode-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .mode-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .mode-btn.active .mode-description {
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Lesson Panel */
+        .lesson-panel {
+            background: var(--bg-secondary);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .lesson-panel.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lesson-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 16px;
+        }
+
+        .lesson-content {
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        .lesson-example {
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .lesson-step {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            padding: 4px 0;
+            color: var(--text-primary);
+        }
+
+        .lesson-explanation {
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        .start-practice-btn {
+            background: linear-gradient(135deg, var(--secondary-color), #34d399);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .start-practice-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Equation Display */
+        .equation-container {
+            background: var(--bg-secondary);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+        }
+
+        .equation-display {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 4px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 8px;
+        }
+
+        .equation-goal {
+            text-align: center;
+            margin-top: 16px;
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .equation-goal strong {
+            color: var(--secondary-color);
+        }
+
+        /* Control Panel */
+        .control-panel {
+            background: var(--bg-secondary);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .control-section {
+            margin-bottom: 24px;
+        }
+
+        .control-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .operation-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .op-btn {
+            padding: 16px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .op-btn:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .op-btn.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .op-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .num-btn {
+            aspect-ratio: 1;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .num-btn:hover:not(:disabled) {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        .num-btn.selected {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .num-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .apply-btn {
+            background: linear-gradient(135deg, var(--secondary-color), #34d399);
+            color: white;
+        }
+
+        .apply-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .apply-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .hint-btn {
+            background: linear-gradient(135deg, var(--accent-color), #fbbf24);
+            color: white;
+        }
+
+        .hint-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* History Panel */
+        .history-panel {
+            background: var(--bg-secondary);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .history-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-history-btn {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .history-step-number {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .history-equation {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .history-operation {
+            font-size: 14px;
+            color: var(--primary-color);
+            margin-top: 4px;
+        }
+
+        /* Messages and Feedback */
+        .message-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .message {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            animation: slideInRight 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, var(--secondary-color), #34d399);
+            color: white;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, var(--danger-color), #f87171);
+            color: white;
+        }
+
+        .message.hint {
+            background: linear-gradient(135deg, var(--accent-color), #fbbf24);
+            color: white;
+        }
+
+        .message.info {
+            background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+            color: white;
+        }
+
+        .message-icon {
+            font-size: 24px;
+        }
+
+        .message-text {
+            flex: 1;
+        }
+
+        /* Success Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 500px;
+            text-align: center;
+            animation: bounceIn 0.5s;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            animation: rotate 1s ease-in-out;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .modal-message {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .modal-solution {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, var(--primary-color), #3b82f6);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .equation-display {
+                font-size: 32px;
+                letter-spacing: 2px;
+            }
+            
+            .control-panel {
+                padding: 16px;
+            }
+            
+            .operation-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .number-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .progress-tracker {
+                justify-content: center;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        button:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span>📐</span>
+                    <span>AlgebraTutor</span>
+                </div>
+                <div class="progress-tracker">
+                    <div class="progress-item">
+                        <span class="progress-label">Score</span>
+                        <span class="progress-value" id="score">0</span>
+                    </div>
+                    <div class="progress-item">
+                        <span class="progress-label">Streak</span>
+                        <span class="progress-value" id="streak">0</span>
+                    </div>
+                    <div class="progress-item">
+                        <span class="progress-label">Level</span>
+                        <span class="progress-value" id="level">1</span>
+                    </div>
+                    <div class="progress-item">
+                        <span class="progress-label">Progress</span>
+                        <span class="progress-value" id="progress">0/10</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="beginner" id="beginnerBtn">
+                <div class="mode-title">Beginner</div>
+                <div class="mode-description">One-step equations (x + 3 = 6)</div>
+            </button>
+            <button class="mode-btn locked" data-mode="intermediate" id="intermediateBtn">
+                <div class="mode-title">Intermediate</div>
+                <div class="mode-description">Two-step equations (2x + 4 = 8)</div>
+            </button>
+            <button class="mode-btn locked" data-mode="advanced" id="advancedBtn">
+                <div class="mode-title">Advanced</div>
+                <div class="mode-description">Complex equations (2x - 6 = 8x)</div>
+            </button>
+        </div>
+
+        <!-- Lesson Panel -->
+        <div class="lesson-panel active" id="lessonPanel">
+            <h2 class="lesson-title">Welcome to Algebra!</h2>
+            <div class="lesson-content" id="lessonContent">
+                <p>Let's learn how to solve algebraic equations step by step.</p>
+                <div class="lesson-example">
+                    <p><strong>Example: Solve x + 3 = 6</strong></p>
+                    <div class="lesson-step">x + 3 = 6</div>
+                    <div class="lesson-explanation">Our goal is to get x by itself on one side.</div>
+                    <div class="lesson-step">x + 3 - 3 = 6 - 3</div>
+                    <div class="lesson-explanation">Subtract 3 from both sides to cancel out the +3.</div>
+                    <div class="lesson-step">x = 3</div>
+                    <div class="lesson-explanation">Great! We found that x equals 3.</div>
+                </div>
+                <p>Remember: Whatever you do to one side, you must do to the other side to keep the equation balanced!</p>
+                <button class="start-practice-btn" onclick="startPractice()">Start Practice</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="practiceArea" style="display: none;">
+            <div>
+                <!-- Equation Display -->
+                <div class="equation-container">
+                    <div class="equation-display" id="equationDisplay">x + 4 = 9</div>
+                    <div class="equation-goal">
+                        Goal: Get <strong>x</strong> by itself
+                    </div>
+                </div>
+
+                <!-- Control Panel -->
+                <div class="control-panel">
+                    <div class="control-section">
+                        <div class="control-title">Step 1: Choose Operation</div>
+                        <div class="operation-buttons">
+                            <button class="op-btn" data-op="add" id="addBtn">
+                                <span>+</span>
+                                <span>Add</span>
+                            </button>
+                            <button class="op-btn" data-op="subtract" id="subtractBtn">
+                                <span>−</span>
+                                <span>Subtract</span>
+                            </button>
+                            <button class="op-btn" data-op="multiply" id="multiplyBtn">
+                                <span>×</span>
+                                <span>Multiply</span>
+                            </button>
+                            <button class="op-btn" data-op="divide" id="divideBtn">
+                                <span>÷</span>
+                                <span>Divide</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-section">
+                        <div class="control-title">Step 2: Choose Number</div>
+                        <div class="number-grid">
+                            <button class="num-btn" data-num="1">1</button>
+                            <button class="num-btn" data-num="2">2</button>
+                            <button class="num-btn" data-num="3">3</button>
+                            <button class="num-btn" data-num="4">4</button>
+                            <button class="num-btn" data-num="5">5</button>
+                            <button class="num-btn" data-num="6">6</button>
+                            <button class="num-btn" data-num="7">7</button>
+                            <button class="num-btn" data-num="8">8</button>
+                            <button class="num-btn" data-num="9">9</button>
+                            <button class="num-btn" data-num="10">10</button>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-btn apply-btn" id="applyBtn" disabled>
+                            Apply to Both Sides
+                        </button>
+                        <button class="action-btn hint-btn" id="hintBtn">
+                            💡 Hint
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Panel -->
+            <div class="history-panel">
+                <div class="history-title">
+                    <span>Solution Steps</span>
+                    <button class="clear-history-btn" onclick="clearHistory()">Clear</button>
+                </div>
+                <div class="history-list" id="historyList"></div>
+            </div>
+        </div>
+
+        <!-- Message Container -->
+        <div class="message-container" id="messageContainer"></div>
+
+        <!-- Success Modal -->
+        <div class="modal" id="successModal">
+            <div class="modal-content">
+                <div class="modal-icon">🎉</div>
+                <h2 class="modal-title">Excellent Work!</h2>
+                <div class="modal-message">
+                    You solved the equation correctly!
+                </div>
+                <div class="modal-solution" id="modalSolution">x = 5</div>
+                <div class="modal-buttons">
+                    <button class="modal-btn primary" onclick="nextProblem()">Next Problem</button>
+                    <button class="modal-btn secondary" onclick="reviewSteps()">Review Steps</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Algebra Course Engine
+        class AlgebraEngine {
+            constructor() {
+                this.modes = {
+                    beginner: {
+                        name: 'Beginner',
+                        description: 'One-step equations',
+                        requiredScore: 0,
+                        problemsToUnlock: 10
+                    },
+                    intermediate: {
+                        name: 'Intermediate',
+                        description: 'Two-step equations',
+                        requiredScore: 100,
+                        problemsToUnlock: 10
+                    },
+                    advanced: {
+                        name: 'Advanced',
+                        description: 'Complex equations',
+                        requiredScore: 250,
+                        problemsToUnlock: 10
+                    }
+                };
+                
+                this.currentMode = 'beginner';
+                this.score = 0;
+                this.streak = 0;
+                this.level = 1;
+                this.problemsSolved = 0;
+                this.currentProblem = null;
+                this.history = [];
+                this.selectedOperation = null;
+                this.selectedNumber = null;
+                
+                this.init();
+            }
+            
+            init() {
+                this.loadProgress();
+                this.attachEventListeners();
+                this.updateUI();
+            }
+            
+            // Equation Parser and Manipulator
+            parseEquation(equationStr) {
+                const [left, right] = equationStr.split('=').map(s => s.trim());
+                return { left: this.parseExpression(left), right: this.parseExpression(right) };
+            }
+            
+            parseExpression(expr) {
+                expr = expr.replace(/\s+/g, '');
+                const terms = [];
+                let currentTerm = '';
+                let sign = '+';
+                
+                for (let i = 0; i < expr.length; i++) {
+                    const char = expr[i];
+                    if (char === '+' || char === '-') {
+                        if (currentTerm) {
+                            terms.push({ coefficient: this.parseCoefficient(currentTerm, sign), variable: currentTerm.includes('x') });
+                            currentTerm = '';
+                        }
+                        sign = char;
+                    } else {
+                        currentTerm += char;
+                    }
+                }
+                
+                if (currentTerm) {
+                    terms.push({ coefficient: this.parseCoefficient(currentTerm, sign), variable: currentTerm.includes('x') });
+                }
+                
+                return terms;
+            }
+            
+            parseCoefficient(term, sign) {
+                let coeff = term.replace('x', '');
+                if (coeff === '' || coeff === '+') coeff = '1';
+                if (coeff === '-') coeff = '-1';
+                const value = parseFloat(coeff);
+                return sign === '-' ? -value : value;
+            }
+            
+            expressionToString(terms) {
+                if (terms.length === 0) return '0';
+                
+                let result = '';
+                terms.forEach((term, index) => {
+                    if (term.coefficient === 0) return;
+                    
+                    const absCoeff = Math.abs(term.coefficient);
+                    const sign = term.coefficient < 0 ? '-' : (index > 0 ? '+' : '');
+                    
+                    if (term.variable) {
+                        if (absCoeff === 1) {
+                            result += `${sign}${index > 0 ? ' ' : ''}x`;
+                        } else {
+                            result += `${sign}${index > 0 ? ' ' : ''}${absCoeff}x`;
+                        }
+                    } else {
+                        result += `${sign}${index > 0 ? ' ' : ''}${absCoeff}`;
+                    }
+                });
+                
+                return result || '0';
+            }
+            
+            applyOperation(equation, operation, value) {
+                const newEquation = {
+                    left: [...equation.left],
+                    right: [...equation.right]
+                };
+                
+                switch(operation) {
+                    case 'add':
+                        newEquation.left.push({ coefficient: value, variable: false });
+                        newEquation.right.push({ coefficient: value, variable: false });
+                        break;
+                    case 'subtract':
+                        newEquation.left.push({ coefficient: -value, variable: false });
+                        newEquation.right.push({ coefficient: -value, variable: false });
+                        break;
+                    case 'multiply':
+                        newEquation.left = newEquation.left.map(term => ({
+                            coefficient: term.coefficient * value,
+                            variable: term.variable
+                        }));
+                        newEquation.right = newEquation.right.map(term => ({
+                            coefficient: term.coefficient * value,
+                            variable: term.variable
+                        }));
+                        break;
+                    case 'divide':
+                        if (value === 0) throw new Error("Cannot divide by zero!");
+                        newEquation.left = newEquation.left.map(term => ({
+                            coefficient: term.coefficient / value,
+                            variable: term.variable
+                        }));
+                        newEquation.right = newEquation.right.map(term => ({
+                            coefficient: term.coefficient / value,
+                            variable: term.variable
+                        }));
+                        break;
+                }
+                
+                // Simplify by combining like terms
+                newEquation.left = this.simplifyTerms(newEquation.left);
+                newEquation.right = this.simplifyTerms(newEquation.right);
+                
+                return newEquation;
+            }
+            
+            simplifyTerms(terms) {
+                let xCoeff = 0;
+                let constant = 0;
+                
+                terms.forEach(term => {
+                    if (term.variable) {
+                        xCoeff += term.coefficient;
+                    } else {
+                        constant += term.coefficient;
+                    }
+                });
+                
+                const simplified = [];
+                if (xCoeff !== 0) {
+                    simplified.push({ coefficient: xCoeff, variable: true });
+                }
+                if (constant !== 0) {
+                    simplified.push({ coefficient: constant, variable: false });
+                }
+                
+                return simplified.length > 0 ? simplified : [{ coefficient: 0, variable: false }];
+            }
+            
+            isSolved(equation) {
+                // Check if left side is just 'x' or a coefficient of x
+                const leftHasOnlyX = equation.left.length === 1 && equation.left[0].variable;
+                const rightHasNoX = !equation.right.some(term => term.variable);
+                return leftHasOnlyX && rightHasNoX && equation.left[0].coefficient === 1;
+            }
+            
+            getSolution(equation) {
+                if (!this.isSolved(equation)) return null;
+                return equation.right.reduce((sum, term) => sum + term.coefficient, 0);
+            }
+            
+            // Problem Generation
+            generateProblem(mode) {
+                let equation;
+                
+                switch(mode) {
+                    case 'beginner':
+                        equation = this.generateBeginnerProblem();
+                        break;
+                    case 'intermediate':
+                        equation = this.generateIntermediateProblem();
+                        break;
+                    case 'advanced':
+                        equation = this.generateAdvancedProblem();
+                        break;
+                    default:
+                        equation = this.generateBeginnerProblem();
+                }
+                
+                return equation;
+            }
+            
+            generateBeginnerProblem() {
+                const type = Math.floor(Math.random() * 3);
+                let left, right;
+                
+                switch(type) {
+                    case 0: // x + a = b
+                        const a = Math.floor(Math.random() * 10) + 1;
+                        const b = Math.floor(Math.random() * 10) + a + 1;
+                        left = [{ coefficient: 1, variable: true }, { coefficient: a, variable: false }];
+                        right = [{ coefficient: b, variable: false }];
+                        break;
+                    case 1: // x - a = b
+                        const a2 = Math.floor(Math.random() * 10) + 1;
+                        const b2 = Math.floor(Math.random() * 15) + 1;
+                        left = [{ coefficient: 1, variable: true }, { coefficient: -a2, variable: false }];
+                        right = [{ coefficient: b2, variable: false }];
+                        break;
+                    case 2: // ax = b
+                        const coeff = Math.floor(Math.random() * 5) + 2;
+                        const result = coeff * (Math.floor(Math.random() * 10) + 1);
+                        left = [{ coefficient: coeff, variable: true }];
+                        right = [{ coefficient: result, variable: false }];
+                        break;
+                }
+                
+                return { left, right };
+            }
+            
+            generateIntermediateProblem() {
+                const coeff = Math.floor(Math.random() * 5) + 2;
+                const constant = Math.floor(Math.random() * 10) + 1;
+                const solution = Math.floor(Math.random() * 10) + 1;
+                const result = coeff * solution + constant;
+                
+                const useSubtraction = Math.random() > 0.5;
+                
+                return {
+                    left: [
+                        { coefficient: coeff, variable: true },
+                        { coefficient: useSubtraction ? -constant : constant, variable: false }
+                    ],
+                    right: [{ coefficient: useSubtraction ? result - 2*constant : result, variable: false }]
+                };
+            }
+            
+            generateAdvancedProblem() {
+                // Generate equations like ax + b = cx + d
+                const a = Math.floor(Math.random() * 5) + 3;
+                const b = Math.floor(Math.random() * 10) + 1;
+                const c = Math.floor(Math.random() * 3) + 1;
+                const solution = Math.floor(Math.random() * 10) + 1;
+                const d = a * solution + b - c * solution;
+                
+                return {
+                    left: [
+                        { coefficient: a, variable: true },
+                        { coefficient: b, variable: false }
+                    ],
+                    right: [
+                        { coefficient: c, variable: true },
+                        { coefficient: d, variable: false }
+                    ]
+                };
+            }
+            
+            // Hint System
+            getHint() {
+                if (!this.currentProblem) return "Start by selecting an operation and a number.";
+                
+                const equation = this.currentProblem;
+                
+                // Check if solved
+                if (this.isSolved(equation)) {
+                    return "Great job! The equation is solved! Click 'Next Problem' to continue.";
+                }
+                
+                // Analyze what operation would be helpful
+                const leftTerms = equation.left;
+                const rightTerms = equation.right;
+                
+                // If there are constants on the left with x
+                const leftConstant = leftTerms.find(t => !t.variable);
+                if (leftConstant) {
+                    if (leftConstant.coefficient > 0) {
+                        return `Try subtracting ${Math.abs(leftConstant.coefficient)} from both sides to isolate the x term.`;
+                    } else {
+                        return `Try adding ${Math.abs(leftConstant.coefficient)} to both sides to isolate the x term.`;
+                    }
+                }
+                
+                // If there's an x term on the right
+                const rightXTerm = rightTerms.find(t => t.variable);
+                if (rightXTerm) {
+                    return `Try subtracting ${Math.abs(rightXTerm.coefficient)}x from both sides to get all x terms on the left.`;
+                }
+                
+                // If x has a coefficient other than 1
+                const xTerm = leftTerms.find(t => t.variable);
+                if (xTerm && xTerm.coefficient !== 1) {
+                    if (Number.isInteger(xTerm.coefficient)) {
+                        return `The coefficient of x is ${xTerm.coefficient}. Try dividing both sides by ${Math.abs(xTerm.coefficient)}.`;
+                    } else {
+                        return `Try to simplify the coefficient of x by dividing both sides.`;
+                    }
+                }
+                
+                return "Think about what operation would help isolate x on one side.";
+            }
+            
+            // UI Updates
+            updateUI() {
+                // Update scores
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('streak').textContent = this.streak;
+                document.getElementById('level').textContent = this.level;
+                document.getElementById('progress').textContent = `${this.problemsSolved % 10}/10`;
+                
+                // Update mode buttons
+                this.updateModeButtons();
+                
+                // Update equation display
+                if (this.currentProblem) {
+                    const equationStr = `${this.expressionToString(this.currentProblem.left)} = ${this.expressionToString(this.currentProblem.right)}`;
+                    document.getElementById('equationDisplay').textContent = equationStr;
+                }
+                
+                // Update apply button state
+                const applyBtn = document.getElementById('applyBtn');
+                if (this.selectedOperation && this.selectedNumber !== null) {
+                    applyBtn.disabled = false;
+                } else {
+                    applyBtn.disabled = true;
+                }
+            }
+            
+            updateModeButtons() {
+                const modes = ['beginner', 'intermediate', 'advanced'];
+                modes.forEach(mode => {
+                    const btn = document.getElementById(`${mode}Btn`);
+                    if (this.score >= this.modes[mode].requiredScore) {
+                        btn.classList.remove('locked');
+                    } else {
+                        btn.classList.add('locked');
+                    }
+                    
+                    if (mode === this.currentMode) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+            
+            // History Management
+            addToHistory(equation, operation = null) {
+                const historyItem = {
+                    equation: `${this.expressionToString(equation.left)} = ${this.expressionToString(equation.right)}`,
+                    operation: operation,
+                    step: this.history.length + 1
+                };
+                
+                this.history.push(historyItem);
+                this.renderHistory();
+            }
+            
+            renderHistory() {
+                const historyList = document.getElementById('historyList');
+                historyList.innerHTML = '';
+                
+                this.history.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `
+                        <div class="history-step-number">Step ${item.step}</div>
+                        <div class="history-equation">${item.equation}</div>
+                        ${item.operation ? `<div class="history-operation">${item.operation}</div>` : ''}
+                    `;
+                    historyList.appendChild(div);
+                });
+            }
+            
+            clearHistory() {
+                this.history = [];
+                if (this.currentProblem) {
+                    this.addToHistory(this.currentProblem, 'Starting equation');
+                }
+                this.renderHistory();
+            }
+            
+            // Message System
+            showMessage(text, type = 'info', duration = 3000) {
+                const container = document.getElementById('messageContainer');
+                const message = document.createElement('div');
+                message.className = `message ${type}`;
+                
+                const icons = {
+                    success: '✅',
+                    error: '❌',
+                    hint: '💡',
+                    info: 'ℹ️'
+                };
+                
+                message.innerHTML = `
+                    <span class="message-icon">${icons[type]}</span>
+                    <span class="message-text">${text}</span>
+                `;
+                
+                container.appendChild(message);
+                
+                setTimeout(() => {
+                    message.style.animation = 'slideInRight 0.3s ease reverse';
+                    setTimeout(() => message.remove(), 300);
+                }, duration);
+            }
+            
+            // Problem Flow
+            startNewProblem() {
+                this.currentProblem = this.generateProblem(this.currentMode);
+                this.history = [];
+                this.selectedOperation = null;
+                this.selectedNumber = null;
+                
+                // Clear selections
+                document.querySelectorAll('.op-btn, .num-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                this.addToHistory(this.currentProblem, 'Starting equation');
+                this.updateUI();
+            }
+            
+            applyOperationToEquation() {
+                if (!this.selectedOperation || this.selectedNumber === null) {
+                    this.showMessage('Please select both an operation and a number!', 'error');
+                    return;
+                }
+                
+                try {
+                    const operationText = this.getOperationText(this.selectedOperation, this.selectedNumber);
+                    this.currentProblem = this.applyOperation(
+                        this.currentProblem,
+                        this.selectedOperation,
+                        this.selectedNumber
+                    );
+                    
+                    this.addToHistory(this.currentProblem, operationText);
+                    
+                    // Reset selections
+                    this.selectedOperation = null;
+                    this.selectedNumber = null;
+                    document.querySelectorAll('.op-btn, .num-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    
+                    this.updateUI();
+                    
+                    // Check if solved
+                    if (this.isSolved(this.currentProblem)) {
+                        this.onProblemSolved();
+                    }
+                    
+                } catch (error) {
+                    this.showMessage(error.message, 'error');
+                }
+            }
+            
+            getOperationText(operation, value) {
+                switch(operation) {
+                    case 'add': return `Add ${value} to both sides`;
+                    case 'subtract': return `Subtract ${value} from both sides`;
+                    case 'multiply': return `Multiply both sides by ${value}`;
+                    case 'divide': return `Divide both sides by ${value}`;
+                    default: return '';
+                }
+            }
+            
+            onProblemSolved() {
+                const solution = this.getSolution(this.currentProblem);
+                const points = this.currentMode === 'beginner' ? 10 :
+                              this.currentMode === 'intermediate' ? 20 : 30;
+                
+                this.score += points;
+                this.streak++;
+                this.problemsSolved++;
+                
+                if (this.problemsSolved % 10 === 0) {
+                    this.level++;
+                }
+                
+                this.saveProgress();
+                this.updateUI();
+                
+                // Show success modal
+                document.getElementById('modalSolution').textContent = `x = ${solution}`;
+                document.getElementById('successModal').classList.add('active');
+                
+                this.showMessage(`Correct! +${points} points`, 'success', 5000);
+            }
+            
+            // Event Listeners
+            attachEventListeners() {
+                // Operation buttons
+                document.querySelectorAll('.op-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (btn.disabled) return;
+                        
+                        document.querySelectorAll('.op-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        this.selectedOperation = btn.dataset.op;
+                        this.updateUI();
+                    });
+                });
+                
+                // Number buttons
+                document.querySelectorAll('.num-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (btn.disabled) return;
+                        
+                        document.querySelectorAll('.num-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        this.selectedNumber = parseInt(btn.dataset.num);
+                        this.updateUI();
+                    });
+                });
+                
+                // Apply button
+                document.getElementById('applyBtn').addEventListener('click', () => {
+                    this.applyOperationToEquation();
+                });
+                
+                // Hint button
+                document.getElementById('hintBtn').addEventListener('click', () => {
+                    const hint = this.getHint();
+                    this.showMessage(hint, 'hint', 5000);
+                });
+                
+                // Mode buttons
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const mode = btn.dataset.mode;
+                        if (this.score < this.modes[mode].requiredScore) {
+                            this.showMessage(`Unlock ${this.modes[mode].name} mode by reaching ${this.modes[mode].requiredScore} points!`, 'info');
+                            return;
+                        }
+                        
+                        this.currentMode = mode;
+                        this.updateUI();
+                        this.showLesson(mode);
+                    });
+                });
+                
+                // Keyboard support
+                document.addEventListener('keydown', (e) => {
+                    if (e.key >= '0' && e.key <= '9') {
+                        const num = parseInt(e.key);
+                        const btn = document.querySelector(`.num-btn[data-num="${num}"]`);
+                        if (btn && !btn.disabled) {
+                            btn.click();
+                        }
+                    } else if (e.key === 'Enter' && !document.getElementById('applyBtn').disabled) {
+                        this.applyOperationToEquation();
+                    } else if (e.key === 'h' || e.key === 'H') {
+                        document.getElementById('hintBtn').click();
+                    }
+                });
+            }
+            
+            // Lesson System
+            showLesson(mode) {
+                const lessonPanel = document.getElementById('lessonPanel');
+                const practiceArea = document.getElementById('practiceArea');
+                
+                lessonPanel.classList.add('active');
+                practiceArea.style.display = 'none';
+                
+                const lessons = {
+                    beginner: {
+                        title: 'Beginner: One-Step Equations',
+                        content: `
+                            <p>Welcome to one-step equations! These are the foundation of algebra.</p>
+                            <div class="lesson-example">
+                                <p><strong>Example 1: Solve x + 4 = 9</strong></p>
+                                <div class="lesson-step">x + 4 = 9</div>
+                                <div class="lesson-explanation">We need to isolate x. Since 4 is being added to x, we'll subtract 4 from both sides.</div>
+                                <div class="lesson-step">x + 4 - 4 = 9 - 4</div>
+                                <div class="lesson-explanation">The +4 and -4 cancel out on the left side.</div>
+                                <div class="lesson-step">x = 5</div>
+                                <div class="lesson-explanation">Perfect! x equals 5.</div>
+                            </div>
+                            <div class="lesson-example">
+                                <p><strong>Example 2: Solve 3x = 12</strong></p>
+                                <div class="lesson-step">3x = 12</div>
+                                <div class="lesson-explanation">x is being multiplied by 3. To isolate x, divide both sides by 3.</div>
+                                <div class="lesson-step">3x ÷ 3 = 12 ÷ 3</div>
+                                <div class="lesson-explanation">The 3s cancel out on the left.</div>
+                                <div class="lesson-step">x = 4</div>
+                                <div class="lesson-explanation">Excellent! x equals 4.</div>
+                            </div>
+                            <p><strong>Key Rule:</strong> Whatever you do to one side, you must do to the other!</p>
+                        `
+                    },
+                    intermediate: {
+                        title: 'Intermediate: Two-Step Equations',
+                        content: `
+                            <p>Two-step equations require two operations to solve. Let's master them!</p>
+                            <div class="lesson-example">
+                                <p><strong>Example: Solve 2x + 6 = 14</strong></p>
+                                <div class="lesson-step">2x + 6 = 14</div>
+                                <div class="lesson-explanation">Step 1: Remove the constant term (+6) by subtracting 6 from both sides.</div>
+                                <div class="lesson-step">2x + 6 - 6 = 14 - 6</div>
+                                <div class="lesson-step">2x = 8</div>
+                                <div class="lesson-explanation">Step 2: Now divide both sides by 2 to isolate x.</div>
+                                <div class="lesson-step">2x ÷ 2 = 8 ÷ 2</div>
+                                <div class="lesson-step">x = 4</div>
+                                <div class="lesson-explanation">Success! We found x = 4.</div>
+                            </div>
+                            <p><strong>Strategy:</strong> First eliminate constants, then deal with coefficients.</p>
+                        `
+                    },
+                    advanced: {
+                        title: 'Advanced: Complex Equations',
+                        content: `
+                            <p>Advanced equations have variables on both sides. Let's conquer them!</p>
+                            <div class="lesson-example">
+                                <p><strong>Example: Solve 5x + 3 = 2x + 12</strong></p>
+                                <div class="lesson-step">5x + 3 = 2x + 12</div>
+                                <div class="lesson-explanation">Step 1: Move all x terms to one side. Subtract 2x from both sides.</div>
+                                <div class="lesson-step">5x - 2x + 3 = 2x - 2x + 12</div>
+                                <div class="lesson-step">3x + 3 = 12</div>
+                                <div class="lesson-explanation">Step 2: Subtract 3 from both sides.</div>
+                                <div class="lesson-step">3x + 3 - 3 = 12 - 3</div>
+                                <div class="lesson-step">3x = 9</div>
+                                <div class="lesson-explanation">Step 3: Divide both sides by 3.</div>
+                                <div class="lesson-step">3x ÷ 3 = 9 ÷ 3</div>
+                                <div class="lesson-step">x = 3</div>
+                                <div class="lesson-explanation">Brilliant! x = 3 is our solution.</div>
+                            </div>
+                            <p><strong>Strategy:</strong> Collect like terms, then solve step by step.</p>
+                        `
+                    }
+                };
+                
+                document.getElementById('lessonContent').innerHTML = lessons[mode].content + 
+                    '<button class="start-practice-btn" onclick="startPractice()">Start Practice</button>';
+                document.querySelector('.lesson-title').textContent = lessons[mode].title;
+            }
+            
+            // Progress Management
+            saveProgress() {
+                const progress = {
+                    score: this.score,
+                    streak: this.streak,
+                    level: this.level,
+                    problemsSolved: this.problemsSolved,
+                    currentMode: this.currentMode
+                };
+                localStorage.setItem('algebraProgress', JSON.stringify(progress));
+            }
+            
+            loadProgress() {
+                const saved = localStorage.getItem('algebraProgress');
+                if (saved) {
+                    const progress = JSON.parse(saved);
+                    this.score = progress.score || 0;
+                    this.streak = progress.streak || 0;
+                    this.level = progress.level || 1;
+                    this.problemsSolved = progress.problemsSolved || 0;
+                    this.currentMode = progress.currentMode || 'beginner';
+                }
+            }
+        }
+        
+        // Global Functions
+        let engine;
+        
+        function startPractice() {
+            document.getElementById('lessonPanel').classList.remove('active');
+            document.getElementById('practiceArea').style.display = 'grid';
+            if (engine) {
+                engine.startNewProblem();
+            }
+        }
+        
+        function nextProblem() {
+            document.getElementById('successModal').classList.remove('active');
+            if (engine) {
+                engine.startNewProblem();
+            }
+        }
+        
+        function reviewSteps() {
+            document.getElementById('successModal').classList.remove('active');
+        }
+        
+        function clearHistory() {
+            if (engine) {
+                engine.clearHistory();
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            engine = new AlgebraEngine();
+            // Show the beginner lesson by default
+            engine.showLesson('beginner');
+        });
+    </script>
+</body>
+</html>
