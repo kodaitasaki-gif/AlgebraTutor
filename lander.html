@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Master algebra step-by-step with our interactive learning platform. Learn equations through guided lessons, practice tools, and instant feedback.">
+    <title>AlgebraMaster - Learn Algebra Step by Step</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-blue: #2563eb;
+            --primary-green: #10b981;
+            --dark-blue: #1e40af;
+            --light-blue: #dbeafe;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --white: #ffffff;
+            --off-white: #f9fafb;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Navigation Bar */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 15px 0;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-blue);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .mobile-menu-btn span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: var(--text-dark);
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--off-white) 0%, var(--light-blue) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--primary-blue) 0%, transparent 70%);
+            opacity: 0.1;
+            top: -150px;
+            right: -150px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, var(--primary-green) 0%, transparent 70%);
+            opacity: 0.1;
+            bottom: -125px;
+            left: -125px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-text h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-text h1 span {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-text p {
+            font-size: 20px;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: left 0.5s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .cta-button:hover::before {
+            left: 100%;
+        }
+        
+        .hero-visual {
+            position: relative;
+        }
+        
+        .equation-demo {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+            animation: slideUp 0.8s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .equation-display {
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--primary-blue);
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .mini-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .mini-btn {
+            padding: 8px 16px;
+            background: var(--off-white);
+            border: 2px solid var(--primary-blue);
+            border-radius: 8px;
+            font-weight: 500;
+            color: var(--primary-blue);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mini-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        /* How It Works Section */
+        .how-it-works {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 50px;
+        }
+        
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        
+        .step-card {
+            text-align: center;
+            padding: 40px 30px;
+            background: var(--off-white);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-green));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .step-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .step-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 36px;
+            font-weight: 600;
+        }
+        
+        .step-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        
+        .step-description {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--off-white) 0%, white 100%);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .feature-item {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .feature-item:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--light-blue);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+        
+        .feature-text {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+        
+        /* Why Choose Section */
+        .why-choose {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .why-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .why-points {
+            list-style: none;
+        }
+        
+        .why-points li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--off-white);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .why-points li:hover {
+            background: white;
+            box-shadow: var(--shadow-md);
+            transform: translateX(10px);
+        }
+        
+        .check-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .why-visual {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section::before,
+        .cta-section::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .cta-section::before {
+            top: -100px;
+            left: -100px;
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        .cta-section::after {
+            bottom: -100px;
+            right: -100px;
+            animation: pulse 4s ease-in-out infinite reverse;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .cta-section h2 {
+            color: white;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .cta-button-secondary {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: var(--primary-blue);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .cta-button-secondary:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 40px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo .logo-icon {
+            background: white;
+            color: var(--primary-blue);
+        }
+        
+        .footer-logo span {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .hero-text h1 {
+                font-size: 36px;
+            }
+            
+            .hero-text p {
+                font-size: 18px;
+            }
+            
+            .steps-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .why-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .why-visual {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-text h1 {
+                font-size: 28px;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+            
+            .why-visual {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Loading Animation */
+        .loader {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--light-blue);
+            border-top-color: var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="container">
+            <div class="nav-container">
+                <a href="#" class="logo">
+                    <div class="logo-icon">∑</div>
+                    <span>AlgebraMaster</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#why-choose">Why Choose</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text fade-in">
+                    <h1>Master Algebra <span>Step by Step</span> — Interactive and Easy!</h1>
+                    <p>Learn to solve equations with interactive tools, clear lessons, and instant feedback.</p>
+                    <a href="/AlgebraTutor/tutor.html" class="cta-button">Start Learning Free</a>
+                </div>
+                <div class="hero-visual fade-in">
+                    <div class="equation-demo">
+                        <div class="equation-display" id="demoEquation">2x + 4 = 10</div>
+                        <div class="mini-buttons">
+                            <button class="mini-btn" onclick="animateEquation()">− Subtract</button>
+                            <button class="mini-btn" onclick="animateEquation()">÷ Divide</button>
+                            <button class="mini-btn" onclick="animateEquation()">✓ Solve</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-container">
+                <div class="step-card fade-in">
+                    <div class="step-icon">1</div>
+                    <h3 class="step-title">Learn</h3>
+                    <p class="step-description">Read quick example lessons that break down algebra concepts into easy-to-understand steps.</p>
+                </div>
+                <div class="step-card fade-in">
+                    <div class="step-icon">2</div>
+                    <h3 class="step-title">Practice</h3>
+                    <p class="step-description">Use Add, Subtract, Multiply, and Divide buttons to solve equations interactively.</p>
+                </div>
+                <div class="step-card fade-in">
+                    <div class="step-icon">3</div>
+                    <h3 class="step-title">Progress</h3>
+                    <p class="step-description">Unlock harder levels after mastering basics. Track your score and achievements!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Learning Features</h2>
+            <div class="features-grid">
+                <div class="feature-item fade-in">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Step-by-Step Solving</h3>
+                    <p class="feature-text">Watch equations transform as you apply operations to both sides simultaneously.</p>
+                </div>
+                <div class="feature-item fade-in">
+                    <div class="feature-icon">📚</div>
+                    <h3 class="feature-title">Three Difficulty Levels</h3>
+                    <p class="feature-text">Beginner, Intermediate, and Advanced modes adapt to your skill level.</p>
+                </div>
+                <div class="feature-item fade-in">
+                    <div class="feature-icon">💡</div>
+                    <h3 class="feature-title">Smart Hints</h3>
+                    <p class="feature-text">Get contextual hints that guide you to the next logical step without giving away the answer.</p>
+                </div>
+                <div class="feature-item fade-in">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Instant Feedback</h3>
+                    <p class="feature-text">Know immediately if your approach is correct with color-coded responses.</p>
+                </div>
+                <div class="feature-item fade-in">
+                    <div class="feature-icon">🏆</div>
+                    <h3 class="feature-title">Progression System</h3>
+                    <p class="feature-text">Unlock new levels after solving 10 problems correctly. Build confidence gradually.</p>
+                </div>
+                <div class="feature-item fade-in">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Works Everywhere</h3>
+                    <p class="feature-text">Fully responsive design works perfectly on desktop, tablet, and mobile devices.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Why Choose Section -->
+    <section class="why-choose" id="why-choose">
+        <div class="container">
+            <h2 class="section-title">Why Choose AlgebraMaster?</h2>
+            <div class="why-content">
+                <div class="why-text">
+                    <ul class="why-points">
+                        <li class="fade-in">
+                            <span class="check-icon">✓</span>
+                            <div>
+                                <strong>Not Just a Calculator</strong><br>
+                                We teach the solving process, not just the answer. Understand the "why" behind each step.
+                            </div>
+                        </li>
+                        <li class="fade-in">
+                            <span class="check-icon">✓</span>
+                            <div>
+                                <strong>Perfect for Everyone</strong><br>
+                                Whether you're a student, parent helping with homework, or teacher looking for resources.
+                            </div>
+                        </li>
+                        <li class="fade-in">
+                            <span class="check-icon">✓</span>
+                            <div>
+                                <strong>Engaging & Structured</strong><br>
+                                Gamified learning keeps students motivated while following a proven curriculum.
+                            </div>
+                        </li>
+                        <li class="fade-in">
+                            <span class="check-icon">✓</span>
+                            <div>
+                                <strong>Build Real Understanding</strong><br>
+                                Visual feedback and step tracking help students truly grasp algebraic concepts.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="why-visual fade-in">
+                    <div class="stat-card">
+                        <div class="stat-number">1000+</div>
+                        <div class="stat-label">Practice Problems</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Difficulty Levels</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Free to Use</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Available Online</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Master Algebra?</h2>
+                <p>Join thousands of students learning algebra the interactive way.</p>
+                <a href="#start" class="cta-button-secondary">Start Solving Now</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-logo">
+                        <div class="logo-icon">∑</div>
+                        <span>AlgebraMaster</span>
+                    </div>
+                    <p class="footer-description">
+                        Learn algebra the smart way with our interactive, step-by-step equation solver. 
+                        Perfect for students, parents, and educators.
+                    </p>
+                </div>
+                <div>
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                    </ul>
